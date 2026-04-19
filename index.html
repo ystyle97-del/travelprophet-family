@@ -10,6 +10,7 @@
             --text-color: #4a3b2c;
             --gold: #d4af37;
             --border-color: #b8860b;
+            --accent-red: #d32f2f;
         }
         body {
             background-color: var(--bg-color);
@@ -44,10 +45,12 @@
             font-family: inherit; font-weight: bold; border-radius: 8px;
             border: 2px solid var(--border-color); cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2); text-align: center;
+            text-decoration: none; display: block; box-sizing: border-box;
         }
         .btn-copper { background: linear-gradient(to bottom, #4f9d92, #3b7a70); color: #fff; }
         .btn-silver { background: linear-gradient(to bottom, #2c3e50, #162230); color: #fff; }
         .btn-gold { background: linear-gradient(to bottom, #2458b3, #113470); color: #ffd700; }
+        .btn-brown { background: #5c4033; color: #fff; }
         .btn-point { background: #fdf5e6; border: 1px solid #8b4513; color: #8b4513; padding: 6px 16px; font-weight: bold; border-radius: 20px; cursor: pointer; }
         .btn-undo { background: #95a5a6; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; border: none; margin-top: 10px; cursor: pointer; }
 
@@ -55,11 +58,15 @@
             background: #fff3cd; color: #856404; border: 2px solid #ffeeba;
             padding: 10px; border-radius: 5px; font-weight: bold; margin: 10px 0; text-align: center;
         }
-        .qr-section {
-            background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc;
-            text-align: center; margin-top: 20px; font-size: 0.85rem;
+        .highlight-box {
+            background: #fff; border: 3px solid var(--accent-red); padding: 15px;
+            border-radius: 10px; margin: 15px 0; text-align: center; font-weight: bold;
         }
-        .qr-image { width: 180px; height: 180px; margin: 10px 0; border: 1px solid #eee; object-fit: contain; }
+        .qr-section {
+            background: white; padding: 15px; border-radius: 8px; border: 2px solid var(--gold);
+            text-align: center; margin-top: 20px; font-size: 0.9rem; font-weight: bold;
+        }
+        .qr-image { width: 180px; height: 180px; margin: 10px 0; border: 1px solid #eee; object-fit: contain; background: #eee; }
 
         .tabs { display: flex; overflow-x: auto; margin-bottom: 20px; border-bottom: 2px solid var(--gold); }
         .tab { padding: 10px 15px; background: rgba(255,255,255,0.3); border: 1px solid #ccc; border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; white-space: nowrap; flex-shrink: 0; min-width: 80px; text-align: center; }
@@ -91,22 +98,54 @@
 </div>
 
 <script>
-    let state = { phase: 'start', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [] };
+    let state = { phase: 'top', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [] };
 
     function render() {
         const app = document.getElementById('app');
-        if (state.phase === 'start') app.innerHTML = getStartHTML();
+        if (state.phase === 'top') app.innerHTML = getTopHTML();
+        else if (state.phase === 'start') app.innerHTML = getStartHTML();
         else if (state.phase === 'exchange') app.innerHTML = getExchangeHTML();
         else if (state.phase === 'main') app.innerHTML = getMainHTML();
         window.scrollTo(0,0);
     }
 
+    function getTopHTML() {
+        return `
+            <div style="text-align:center; margin-bottom:20px;">
+                <p style="margin:0; font-weight:bold; color:#8b4513;">旅を彩るカードゲーム</p>
+                <h1 style="border:none; margin:0; font-size:1.8rem;">～トラベル・プロフェット～</h1>
+                <p style="margin:0; font-size:1.2rem; font-weight:bold; color:#5c4033;">家族旅行Edition</p>
+            </div>
+
+            <div class="setup-form">
+                <p>～トラベル・プロフェット～の遊び方説明サイトです。</p>
+                <div style="text-align:center; margin:15px 0;">
+                    <button onclick="openVideo()" style="background:#5c4033; color:#f4e4bc; border:1px solid var(--border-color); padding:12px 20px; border-radius:25px; font-weight:bold; cursor:pointer; width:100%;">📖 遊び方の解説動画を見る</button>
+                </div>
+                
+                <p>このサイトでは<span style="font-weight:bold; color:var(--accent-red); background:yellow;">”点数計算”</span>もできます。<br>
+                ただし、点数計算は<span style="font-weight:bold; text-decoration:underline;">異なるスマホ間で共有することができません。</span></p>
+                
+                <div class="highlight-box">
+                    “プレイヤー登録”と”点数計算”は代表者1人のスマホで行って下さい。
+                </div>
+
+                <div class="qr-section">
+                    代表者以外のプレイヤーは以下のQRコードから遊び方説明専用サイトに移動して下さい。
+                    <br>
+                    <img src="qr-code.png" class="qr-image" alt="マニュアル用QRコード(ここに画像を配置)">
+                    <p style="font-size:0.75rem; color:#666; font-weight:normal;">（スマホで読み取ってマニュアルを確認できます）</p>
+                </div>
+            </div>
+
+            <div style="flex-grow:1"></div>
+            <button onclick="state.phase='start'; render();" class="btn btn-brown">プレイヤー登録へ</button>
+        `;
+    }
+
     function getStartHTML() {
         return `
-            <h1>トラベル・プロフェット<br><small style="font-size:0.9rem; color:#8b4513;">～家族旅行Edition～</small></h1>
-            <div style="text-align:center; margin-bottom:20px;">
-                <button onclick="openVideo()" style="background:#5c4033; color:#f4e4bc; border:1px solid var(--border-color); padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">📖 遊び方の解説動画</button>
-            </div>
+            <h1>プレイヤー登録</h1>
             <div class="setup-form">
                 <h3>プレイヤー登録 <small style="font-size:0.8rem; font-weight:normal;">(5人まで遊べます)</small></h3>
                 <div id="player-inputs">
@@ -116,14 +155,9 @@
                 <button id="add-player-btn" onclick="addInput()" class="btn-point" style="width:100%;">＋ プレイヤー追加</button>
             </div>
             
-            <div class="qr-section">
-                <p><b>【重要】</b><br>プレイヤー登録および点数計算は代表者一人のアプリで行って下さい。</p>
-                <p>それ以外のプレイヤーは以下のQRコードからマニュアル専用アプリに移動して下さい。</p>
-                <img src="qr-code.png" class="qr-image" alt="マニュアルQRコード">
-                <p style="font-size:0.75rem; color:#666;">（スマホで読み取ってマニュアルを確認できます）</p>
-            </div>
-
-            <button onclick="startExchange()" class="btn" style="background:#5c4033; color:#fff; margin-top:20px;">次へ（交換フェイズ開始）</button>
+            <div style="flex-grow:1"></div>
+            <button onclick="startExchange()" class="btn btn-brown">次へ（交換フェイズ開始）</button>
+            <div style="text-align:center;"><button class="btn-undo" onclick="state.phase='top'; render();">↩ トップに戻る</button></div>
         `;
     }
 
@@ -140,9 +174,15 @@
             content = `
                 <h3>② 苦難の回収</h3>
                 <p style="font-size:0.9rem;">他人が捨てた”難しい予言”のカードの中から欲しいものを回収することができます。<br>回収できる上限枚数は<b>金1枚、銀2枚、銅3枚</b>までです。</p>
+                
                 <div class="important-note">
-                    回収したカードはまだ手札の中には入れず、自分の前に伏せたまま並べておくこと！
+                    ※予言の中身は見ないまま回収します。回収したカードはまだ手札には入れず、自分の前に並べて下さい。金・銀・銅いずれのカードを回収しても1点の加算です。
                 </div>
+
+                <div style="background:#fff3cd; border:2px solid var(--accent-red); padding:10px; border-radius:5px; text-align:center; font-weight:bold; color:var(--accent-red); margin-bottom:10px;">
+                    回収したいカードが被ったら当人同士で交渉!!
+                </div>
+
                 <p style="font-size:1.1rem; margin-top:10px; text-align:center; background:#d32f2f; color:white; padding:5px; border-radius:5px; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">1枚回収するごとに1点加点！</p>
                 ${state.players.map((p, i) => `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:10px; background:white; border-radius:5px; border:1px solid #ddd;">
@@ -151,22 +191,17 @@
                     </div>
                 `).join('')}
                 <div style="text-align:right;"><button class="btn-undo" onclick="undo()">↩ 1点取消(戻る)</button></div>
-                <p style="font-size:0.8rem; color:#666; margin-top:10px;">※予言の中身は見えません。属性(目・口・手足)だけを頼りにしてください。回収したいカードが被ったら当人同士で交渉！</p>
-                <div style="display:flex; gap:5px; margin-top:10px; justify-content:center;">
-                    <img src="https://i.postimg.cc/8CNHNQcv/muaikon.png" width="45" alt="目">
-                    <img src="https://i.postimg.cc/Y2fKNgLz/kouaikon.png" width="45" alt="口">
-                    <img src="https://i.postimg.cc/nzGRm4SX/shou-zuaikon.png" width="45" alt="手足">
-                </div>
+                
                 <button onclick="state.exchangeStep=3; render();" class="btn btn-copper" style="margin-top:20px;">全員回収し終えたら次へ</button>
                 <div style="text-align:center;"><button class="btn-undo" onclick="state.exchangeStep=1; render();">↩ 浄化(ステップ1)に戻る</button></div>
             `;
         } else if (state.exchangeStep === 3) {
             content = `
                 <h3>③ 6枚への復帰</h3>
-                <p>手札の枚数を<b>金1枚、銀2枚、銅3枚 (計6枚)</b>となるようにします。<br><br>
-                1. 回収したカードは<b>必ず</b>手札に入れます。<br>
-                2. 最初に配られた手札から超過分を捨てて調整します。<br>
-                3. 足りない場合は<b>山札から</b>補充します。</p>
+                <p>手札の枚数を金1枚、銀2枚、銅3枚 (計6枚)となるよう最終調整します。<br><br>
+                1.まず <b>回収したカードは必ず手札に入れます。</b><br>
+                2. 規定枚数を超過したら、<b>最初に配られた手札から捨てて調整します。</b><br>
+                3. 規定枚数に足りない場合は<b>山札から補充します。</b></p>
                 <div class="important-note">
                     全員の手札が計6枚になったら冒険の開始です！
                 </div>
@@ -180,7 +215,10 @@
     function getMainHTML() {
         const player = state.players[state.currentTab];
         return `
-            <h1>トラベル・プロフェット</h1>
+            <div style="text-align:center; margin-bottom:10px;">
+                <h1 style="border:none; margin:0; font-size:1.2rem;">トラベル・プロフェット 家族旅行Edition</h1>
+                <p style="margin:0; font-size:1.4rem; font-weight:bold; color:#5c4033;">冒険の記録</p>
+            </div>
             <div class="tabs">
                 ${state.players.map((p, i) => `
                     <div class="tab ${i === state.currentTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -197,22 +235,23 @@
 
             <button onclick="openRule()" style="width:100%; background:#fdf5e6; border:1px solid #8b4513; color:#8b4513; margin-bottom:15px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📜 プロフェット忘れと指摘について</button>
             
-            <div style="background:#fff3cd; border:2px solid #8b4513; padding:12px; border-radius:10px; margin-bottom:15px; font-size:0.9rem; color:#4a3b2c; text-align:center;">
-                <b>予言を達成したら「プロフェット!」と宣言して、予言の内容を全員に開示します。これにより金→5点、銀→2点、銅→1点が加点されます。予言の色に合わせたボタンを押して下さい。</b>
-            </div>
-            
             <button class="btn btn-copper" onclick="handleProphet('copper', this)">銅の予言達成 (+1点)</button>
             <button class="btn btn-silver" onclick="handleProphet('silver', this)">銀の予言達成 (+2点)</button>
             <button class="btn btn-gold" onclick="handleProphet('gold', this)">夜会: 金の予言達成 (+5点)</button>
             
             <button class="btn-point" style="width:100%; margin-top:5px; padding:15px;" onclick="manualAdd(1)">💡 宣言忘れ指摘ボーナス (+1点)</button>
             
+            <div class="highlight-box" style="border-color: var(--gold); background: #fffdf8; font-size: 0.9rem;">
+                家族旅行Editionには金・銀・銅それぞれのカードに1枚ずつ白紙の予言カードがあります。家族オリジナルの予言を書いて使用して下さい。
+            </div>
+
             <div style="text-align:center; margin-top:40px;">
                 <button onclick="resetGame()" style="color:#999; text-decoration:underline; background:none; border:none; font-size:0.8rem;">ゲームを最初からやり直す</button>
             </div>
         `;
     }
 
+    // --- ロジック部分 ---
     function addInput() {
         const div = document.getElementById('player-inputs');
         const btn = document.getElementById('add-player-btn');
