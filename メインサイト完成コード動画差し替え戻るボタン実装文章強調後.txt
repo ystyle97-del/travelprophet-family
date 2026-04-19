@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>トラベル・プロフェット ～家族旅行Edition～</title>
+    <style>
+        :root {
+            --bg-color: #ebdcb2;
+            --text-color: #4a3b2c;
+            --gold: #d4af37;
+            --border-color: #b8860b;
+        }
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.1) 100%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 4px);
+            color: var(--text-color);
+            font-family: "Georgia", "Yu Mincho", "Hiragino Mincho ProN", serif;
+            margin: 0; padding: 0; line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 500px; margin: 0 auto; padding: 20px;
+            box-sizing: border-box; min-height: 100vh; display: flex; flex-direction: column;
+        }
+        h1 {
+            text-align: center; font-size: 1.6rem; color: #5c4033;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px;
+        }
+        .setup-form, .step-card {
+            background: rgba(255, 255, 255, 0.4); padding: 20px;
+            border-radius: 8px; border: 1px solid var(--gold); margin-bottom: 15px;
+        }
+        .step-card h3 { margin-top: 0; color: #8b4513; border-left: 5px solid var(--gold); padding-left: 10px; }
+        .p-input {
+            width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--gold);
+            border-radius: 4px; background: #fffdf8; font-size: 1rem; box-sizing: border-box;
+        }
+        .btn {
+            width: 100%; padding: 18px; margin-bottom: 15px; font-size: 1.3rem;
+            font-family: inherit; font-weight: bold; border-radius: 8px;
+            border: 2px solid var(--border-color); cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); text-align: center;
+        }
+        .btn-copper { background: linear-gradient(to bottom, #4f9d92, #3b7a70); color: #fff; }
+        .btn-silver { background: linear-gradient(to bottom, #2c3e50, #162230); color: #fff; }
+        .btn-gold { background: linear-gradient(to bottom, #2458b3, #113470); color: #ffd700; }
+        .btn-point { background: #fdf5e6; border: 1px solid #8b4513; color: #8b4513; padding: 6px 16px; font-weight: bold; border-radius: 20px; cursor: pointer; }
+        .btn-undo { background: #95a5a6; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; border: none; margin-top: 10px; cursor: pointer; }
+
+        .important-note {
+            background: #fff3cd; color: #856404; border: 2px solid #ffeeba;
+            padding: 10px; border-radius: 5px; font-weight: bold; margin: 10px 0; text-align: center;
+        }
+        .qr-section {
+            background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc;
+            text-align: center; margin-top: 20px; font-size: 0.85rem;
+        }
+        .qr-image { width: 180px; height: 180px; margin: 10px 0; border: 1px solid #eee; object-fit: contain; }
+
+        .tabs { display: flex; overflow-x: auto; margin-bottom: 20px; border-bottom: 2px solid var(--gold); }
+        .tab { padding: 10px 15px; background: rgba(255,255,255,0.3); border: 1px solid #ccc; border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; white-space: nowrap; flex-shrink: 0; min-width: 80px; text-align: center; }
+        .tab.active { background: var(--gold); color: #fff; font-weight: bold; }
+        .player-info { text-align: center; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.5); border: 2px solid var(--gold); border-radius: 8px; }
+        .score-badge { font-size: 2.2rem; font-weight: bold; color: #8b0000; }
+        .particle-coin { position: fixed; width: 24px; height: 24px; background: radial-gradient(circle, #ffe066 0%, #d4af37 100%); border: 2px solid #b8860b; border-radius: 50%; pointer-events: none; z-index: 9999; }
+    </style>
+</head>
+<body>
+<div id="app" class="container"></div>
+
+<div id="video-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items: center; flex-direction: column;">
+    <div style="width: 90%; max-width: 560px;">
+        <div style="position: relative; padding-top: 56.25%;">
+            <iframe id="youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <button onclick="closeVideo()" style="width:100%; margin-top:15px; padding:10px; background:#d32f2f; color:white; border:none; font-weight:bold; border-radius:5px; cursor:pointer;">閉じる</button>
+    </div>
+</div>
+
+<div id="rule-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center; flex-direction:column;">
+    <div style="width:90%; max-width:560px; background:#fdf5e6; padding:20px; border-radius:10px;">
+        <h3 style="color:#8b4513; margin-top:0;">📜 プロフェット忘れと指摘について</h3>
+        <p style="font-size:0.9rem; color:#4a3b2c;">予言を達成したら<b>「プロフェット！」</b>と宣言して、内容を全員に開示します。これにより金→5点、銀→2点、銅→1点が加点されます。</p>
+        <p style="font-size:0.9rem; color:#4a3b2c; border-left:3px solid #d32f2f; padding-left:10px;"><b>注意：</b>「プロフェット！」宣言を忘れた場合は加点されません。その忘れを指摘した人に<b>1点</b>が加点されます。</p>
+        <button onclick="closeRule()" style="width:100%; padding:12px; background:#5c4033; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">了解！</button>
+    </div>
+</div>
+
+<script>
+    let state = { phase: 'start', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [] };
+
+    function render() {
+        const app = document.getElementById('app');
+        if (state.phase === 'start') app.innerHTML = getStartHTML();
+        else if (state.phase === 'exchange') app.innerHTML = getExchangeHTML();
+        else if (state.phase === 'main') app.innerHTML = getMainHTML();
+        window.scrollTo(0,0);
+    }
+
+    function getStartHTML() {
+        return `
+            <h1>トラベル・プロフェット<br><small style="font-size:0.9rem; color:#8b4513;">～家族旅行Edition～</small></h1>
+            <div style="text-align:center; margin-bottom:20px;">
+                <button onclick="openVideo()" style="background:#5c4033; color:#f4e4bc; border:1px solid var(--border-color); padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">📖 遊び方の解説動画</button>
+            </div>
+            <div class="setup-form">
+                <h3>プレイヤー登録 <small style="font-size:0.8rem; font-weight:normal;">(5人まで遊べます)</small></h3>
+                <div id="player-inputs">
+                    <input type="text" class="p-input" value="プレイヤー1">
+                    <input type="text" class="p-input" value="プレイヤー2">
+                </div>
+                <button id="add-player-btn" onclick="addInput()" class="btn-point" style="width:100%;">＋ プレイヤー追加</button>
+            </div>
+            
+            <div class="qr-section">
+                <p><b>【重要】</b><br>プレイヤー登録および点数計算は代表者一人のアプリで行って下さい。</p>
+                <p>それ以外のプレイヤーは以下のQRコードからマニュアル専用アプリに移動して下さい。</p>
+                <img src="qr-code.png" class="qr-image" alt="マニュアルQRコード">
+                <p style="font-size:0.75rem; color:#666;">（スマホで読み取ってマニュアルを確認できます）</p>
+            </div>
+
+            <button onclick="startExchange()" class="btn" style="background:#5c4033; color:#fff; margin-top:20px;">次へ（交換フェイズ開始）</button>
+        `;
+    }
+
+    function getExchangeHTML() {
+        let content = '';
+        if (state.exchangeStep === 1) {
+            content = `
+                <h3>① 予言の浄化</h3>
+                <p>手持ちのカードの中から達成が難しいと感じるものを<b>1回だけ</b>(<b>何枚でも</b>)捨てることができます。<br><br>捨てたいカードを<b>”伏せたまま”</b>自分の前に並べます。1枚も捨てないことも可能です。</p>
+                <button onclick="state.exchangeStep=2; render();" class="btn btn-copper">全員並べ終えたら次へ</button>
+                <div style="text-align:center;"><button class="btn-undo" onclick="state.phase='start'; render();">↩ プレイヤー登録に戻る</button></div>
+            `;
+        } else if (state.exchangeStep === 2) {
+            content = `
+                <h3>② 苦難の回収</h3>
+                <p style="font-size:0.9rem;">他人が捨てた”難しい予言”のカードの中から欲しいものを回収することができます。<br>回収できる上限枚数は<b>金1枚、銀2枚、銅3枚</b>までです。</p>
+                <div class="important-note">
+                    回収したカードはまだ手札の中には入れず、自分の前に伏せたまま並べておくこと！
+                </div>
+                <p style="font-size:1.1rem; margin-top:10px; text-align:center; background:#d32f2f; color:white; padding:5px; border-radius:5px; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">1枚回収するごとに1点加点！</p>
+                ${state.players.map((p, i) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:10px; background:white; border-radius:5px; border:1px solid #ddd;">
+                        <span><b>${p.name}</b>: ${p.score}pt</span>
+                        <button class="btn-point" onclick="addExPoint(${i})">+1点</button>
+                    </div>
+                `).join('')}
+                <div style="text-align:right;"><button class="btn-undo" onclick="undo()">↩ 1点取消(戻る)</button></div>
+                <p style="font-size:0.8rem; color:#666; margin-top:10px;">※予言の中身は見えません。属性(目・口・手足)だけを頼りにしてください。回収したいカードが被ったら当人同士で交渉！</p>
+                <div style="display:flex; gap:5px; margin-top:10px; justify-content:center;">
+                    <img src="https://i.postimg.cc/8CNHNQcv/muaikon.png" width="45" alt="目">
+                    <img src="https://i.postimg.cc/Y2fKNgLz/kouaikon.png" width="45" alt="口">
+                    <img src="https://i.postimg.cc/nzGRm4SX/shou-zuaikon.png" width="45" alt="手足">
+                </div>
+                <button onclick="state.exchangeStep=3; render();" class="btn btn-copper" style="margin-top:20px;">全員回収し終えたら次へ</button>
+                <div style="text-align:center;"><button class="btn-undo" onclick="state.exchangeStep=1; render();">↩ 浄化(ステップ1)に戻る</button></div>
+            `;
+        } else if (state.exchangeStep === 3) {
+            content = `
+                <h3>③ 6枚への復帰</h3>
+                <p>手札の枚数を<b>金1枚、銀2枚、銅3枚 (計6枚)</b>となるようにします。<br><br>
+                1. 回収したカードは<b>必ず</b>手札に入れます。<br>
+                2. 最初に配られた手札から超過分を捨てて調整します。<br>
+                3. 足りない場合は<b>山札から</b>補充します。</p>
+                <div class="important-note">
+                    全員の手札が計6枚になったら冒険の開始です！
+                </div>
+                <button onclick="startMain()" class="btn btn-gold" style="margin-top:20px;">冒険開始（メインへ）</button>
+                <div style="text-align:center;"><button class="btn-undo" onclick="state.exchangeStep=2; render();">↩ 回収(ステップ2)に戻る</button></div>
+            `;
+        }
+        return `<h1>交換フェイズ</h1><div class="step-card">${content}</div>`;
+    }
+
+    function getMainHTML() {
+        const player = state.players[state.currentTab];
+        return `
+            <h1>トラベル・プロフェット</h1>
+            <div class="tabs">
+                ${state.players.map((p, i) => `
+                    <div class="tab ${i === state.currentTab ? 'active' : ''}" onclick="switchTab(${i})">
+                        ${p.name}<br>${p.score}pt
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="player-info">
+                <h2>${player.name}</h2>
+                <div class="score-badge">${player.score} pt</div>
+                <button class="btn-undo" onclick="undo()">↩ ひとつ前に戻る</button>
+            </div>
+
+            <button onclick="openRule()" style="width:100%; background:#fdf5e6; border:1px solid #8b4513; color:#8b4513; margin-bottom:15px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📜 プロフェット忘れと指摘について</button>
+            
+            <div style="background:#fff3cd; border:2px solid #8b4513; padding:12px; border-radius:10px; margin-bottom:15px; font-size:0.9rem; color:#4a3b2c; text-align:center;">
+                <b>予言を達成したら「プロフェット!」と宣言して、予言の内容を全員に開示します。これにより金→5点、銀→2点、銅→1点が加点されます。予言の色に合わせたボタンを押して下さい。</b>
+            </div>
+            
+            <button class="btn btn-copper" onclick="handleProphet('copper', this)">銅の予言達成 (+1点)</button>
+            <button class="btn btn-silver" onclick="handleProphet('silver', this)">銀の予言達成 (+2点)</button>
+            <button class="btn btn-gold" onclick="handleProphet('gold', this)">夜会: 金の予言達成 (+5点)</button>
+            
+            <button class="btn-point" style="width:100%; margin-top:5px; padding:15px;" onclick="manualAdd(1)">💡 宣言忘れ指摘ボーナス (+1点)</button>
+            
+            <div style="text-align:center; margin-top:40px;">
+                <button onclick="resetGame()" style="color:#999; text-decoration:underline; background:none; border:none; font-size:0.8rem;">ゲームを最初からやり直す</button>
+            </div>
+        `;
+    }
+
+    function addInput() {
+        const div = document.getElementById('player-inputs');
+        const btn = document.getElementById('add-player-btn');
+        if (div && div.children.length < 5) {
+            const input = document.createElement('input');
+            input.type = 'text'; input.className = 'p-input';
+            input.value = 'プレイヤー' + (div.children.length + 1);
+            div.appendChild(input);
+            if (div.children.length === 5 && btn) btn.style.display = 'none';
+        }
+    }
+
+    function startExchange() {
+        const inputs = document.querySelectorAll('.p-input');
+        state.players = Array.from(inputs).map(i => ({ name: i.value, score: 0, copper: 0, silver: 0, gold: 0, earlyBird: null }));
+        state.phase = 'exchange';
+        state.exchangeStep = 1;
+        render();
+    }
+
+    function addExPoint(i) {
+        saveHistory();
+        state.players[i].score += 1;
+        if (navigator.vibrate) navigator.vibrate(50);
+        render();
+    }
+
+    function startMain() {
+        state.phase = 'main';
+        state.history = [];
+        render();
+    }
+
+    function saveHistory() {
+        state.history.push(JSON.stringify({
+            players: state.players.map(p => ({...p})),
+            earlyBirdCounter: state.earlyBirdCounter
+        }));
+        if (state.history.length > 10) state.history.shift();
+    }
+
+    function undo() {
+        if (state.history.length > 0) {
+            const lastState = JSON.parse(state.history.pop());
+            state.players = lastState.players;
+            state.earlyBirdCounter = lastState.earlyBirdCounter;
+            render();
+        } else {
+            alert("戻せる履歴がありません。");
+        }
+    }
+
+    function switchTab(i) {
+        state.currentTab = i;
+        render();
+    }
+
+    function manualAdd(pts) {
+        saveHistory();
+        state.players[state.currentTab].score += pts;
+        if (navigator.vibrate) navigator.vibrate(50);
+        render();
+    }
+
+    function handleProphet(type, el) {
+        saveHistory();
+        const p = state.players[state.currentTab];
+        let pts = type === 'gold' ? 5 : (type === 'silver' ? 2 : 1);
+        p.score += pts;
+        if (type === 'copper') p.copper++;
+        if (type === 'silver') p.silver++;
+        
+        const rect = el.getBoundingClientRect();
+        for(let i=0; i<15; i++) createParticle(rect.left + rect.width/2, rect.top + rect.height/2);
+        if (navigator.vibrate) navigator.vibrate(pts * 50);
+
+        if (!p.earlyBird && (p.copper + p.silver) >= 4) {
+            p.earlyBird = state.earlyBirdCounter++;
+            const bonus = Math.max(0, state.players.length - p.earlyBird + 1);
+            p.score += bonus;
+            alert(p.name + "さん、早上がりボーナス +" + bonus + "点！");
+        }
+        render();
+    }
+
+    function createParticle(x, y) {
+        const c = document.createElement('div');
+        c.className = 'particle-coin';
+        c.style.left = x + 'px'; c.style.top = y + 'px';
+        document.body.appendChild(c);
+        const a = Math.random() * Math.PI * 2;
+        const v = 50 + Math.random() * 50;
+        c.animate([
+            { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
+            { transform: `translate(${Math.cos(a)*v}px, ${Math.sin(a)*v - 100}px) scale(1.2)`, opacity: 0 }
+        ], { duration: 800, easing: 'ease-out' }).onfinish = () => c.remove();
+    }
+
+    function openVideo() {
+        document.getElementById('video-modal').style.display = 'flex';
+        const videoId = "0rsxbwzfy3k"; 
+        document.getElementById('youtube-iframe').src = "https://www.youtube.com/embed/" + videoId + "?rel=0&autoplay=1";
+    }
+    function closeVideo() {
+        document.getElementById('video-modal').style.display = 'none';
+        document.getElementById('youtube-iframe').src = "";
+    }
+    function openRule() { document.getElementById('rule-modal').style.display = 'flex'; }
+    function closeRule() { document.getElementById('rule-modal').style.display = 'none'; }
+    function resetGame() {
+        if (confirm("ゲームの状態をすべてリセットして最初からやり直しますか？")) {
+            location.reload();
+        }
+    }
+
+    render();
+</script>
+</body>
+</html>
