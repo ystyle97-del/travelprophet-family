@@ -74,6 +74,14 @@
         .player-info { text-align: center; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.5); border: 2px solid var(--gold); border-radius: 8px; }
         .score-badge { font-size: 2.2rem; font-weight: bold; color: #8b0000; }
         .particle-coin { position: fixed; width: 24px; height: 24px; background: radial-gradient(circle, #ffe066 0%, #d4af37 100%); border: 2px solid #b8860b; border-radius: 50%; pointer-events: none; z-index: 9999; }
+        
+        /* 問い合わせフォーム用のスタイル */
+        .contact-section {
+            margin-top: 30px; padding: 15px; border-top: 1px solid var(--gold); text-align: center; font-size: 0.85rem;
+        }
+        .btn-contact {
+            display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff; border: 1px solid #5c4033; color: #5c4033; text-decoration: none; border-radius: 5px; font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +148,11 @@
 
             <div style="flex-grow:1"></div>
             <button onclick="state.phase='start'; render();" class="btn btn-brown">プレイヤー登録へ</button>
+
+            <div class="contact-section">
+                <p>プレイしていただきありがとうございます。ルールに関するご質問や、プレイの感想、新しい予言のアイデアはこちらからお寄せください。作者（Ystyle）がすべて大切に拝読します。</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScme0BFNEPqQkbTAu8mYB1XddLN4oKLLxlevtUT6fte-e-fgg/viewform?usp=dialog" target="_blank" class="btn-contact">お問い合わせ・アイデア提案</a>
+            </div>
         `;
     }
 
@@ -243,6 +256,11 @@
             
             <div class="highlight-box" style="border-color: var(--gold); background: #fffdf8; font-size: 0.9rem;">
                 家族旅行Editionには金・銀・銅それぞれのカードに1枚ずつ白紙の予言カードがあります。家族オリジナルの予言を書いて使用して下さい。
+            </div>
+
+            <div class="contact-section">
+                <p>プレイしていただきありがとうございます。ルールに関するご質問や、プレイの感想、新しい予言のアイデアはこちらからお寄せください。作者（Ystyle）がすべて大切に拝読します。</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScme0BFNEPqQkbTAu8mYB1XddLN4oKLLxlevtUT6fte-e-fgg/viewform?usp=dialog" target="_blank" class="btn-contact">お問い合わせ・アイデア提案</a>
             </div>
 
             <div style="text-align:center; margin-top:40px;">
@@ -360,7 +378,7 @@
         document.getElementById('youtube-iframe').src = "";
     }
     function openRule() { document.getElementById('rule-modal').style.display = 'flex'; }
-    function closeRule() { document.getElementById('rule-modal').style.display = 'none'; }
+    function closeRule() { document.getElementById('rule-modal').style.none; }
     function resetGame() {
         if (confirm("ゲームの状態をすべてリセットして最初からやり直しますか？")) {
             location.reload();
