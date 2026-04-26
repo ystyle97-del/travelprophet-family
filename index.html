@@ -82,13 +82,12 @@
         .btn-contact {
             display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff; border: 1px solid #5c4033; color: #5c4033; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
-
-        /* サウンドボタン用 */
-        .sound-control { margin-bottom: 20px; text-align: center; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; border: 1px dashed var(--gold); }
     </style>
 </head>
 <body>
 <div id="app" class="container"></div>
+
+<audio id="trade-bgm" src="tradeBGM.mp3" loop></audio>
 
 <div id="video-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items: center; flex-direction: column;">
     <div style="width: 90%; max-width: 560px;">
@@ -109,29 +108,7 @@
 </div>
 
 <script>
-    let state = { phase: 'top', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [] };
-
-    // 音楽の設定
-    const bgm = new Audio('tradeBGM.MP3');
-    bgm.loop = true;
-    let isPlaying = false;
-
-    function toggleMusic() {
-        if (isPlaying) {
-            bgm.pause();
-            isPlaying = false;
-        } else {
-            bgm.play().catch(e => console.log("再生に失敗しました:", e));
-            isPlaying = true;
-        }
-        render();
-    }
-
-    function stopMusic() {
-        bgm.pause();
-        bgm.currentTime = 0;
-        isPlaying = false;
-    }
+    let state = { phase: 'top', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [], isMuted: true };
 
     function render() {
         const app = document.getElementById('app');
@@ -201,12 +178,18 @@
 
     function getExchangeHTML() {
         let content = '';
+        let soundBtn = `
+            <div style="text-align:center; margin-bottom:15px; padding:10px; border:1px dashed var(--gold); border-radius:8px; background:rgba(255,255,255,0.5);">
+                <p style="margin:0 0 8px 0; font-size:0.85rem; font-weight:bold;">気分を盛り上げたい方はサウンドをONに</p>
+                <button onclick="toggleSound()" style="padding:8px 20px; border-radius:20px; border:1px solid #5c4033; background:${state.isMuted ? '#fff' : '#5c4033'}; color:${state.isMuted ? '#5c4033' : '#fff'}; font-weight:bold; cursor:pointer;">
+                    ${state.isMuted ? '🎵 サウンドON' : '🔇 サウンドOFF'}
+                </button>
+            </div>
+        `;
+
         if (state.exchangeStep === 1) {
             content = `
-                <div class="sound-control">
-                    <p style="margin-top:0; font-size:0.85rem;">気分を盛り上げたい方はサウンドをONに</p>
-                    <button class="btn-point" onclick="toggleMusic()">${isPlaying ? '🎵 サウンドOFF' : '🎵 サウンドON'}</button>
-                </div>
+                ${soundBtn}
                 <h3>① 予言の浄化</h3>
                 <p>手持ちのカードの中から達成が難しいと感じるものを<b>1回だけ</b>(<b>何枚でも</b>)捨てることができます。<br><br>捨てたいカードを<b>”伏せたまま”</b>自分の前に並べます。1枚も捨てないことも可能です。</p>
                 <button onclick="state.exchangeStep=2; render();" class="btn btn-copper">全員並べ終えたら次へ</button>
@@ -214,6 +197,7 @@
             `;
         } else if (state.exchangeStep === 2) {
             content = `
+                ${soundBtn}
                 <h3>② 苦難の回収</h3>
                 <p style="font-size:0.9rem;">他人が捨てた”難しい予言”のカードの中から欲しいものを回収することができます。<br>回収できる上限枚数は<b>金1枚、銀2枚、銅3枚</b>までです。</p>
                 
@@ -239,6 +223,7 @@
             `;
         } else if (state.exchangeStep === 3) {
             content = `
+                ${soundBtn}
                 <h3>③ 6枚への復帰</h3>
                 <p>手札の枚数を金1枚、銀2枚、銅3枚 (計6枚)となるよう最終調整します。<br><br>
                 1.まず <b>回収したカードは必ず手札に入れます。</b><br>
@@ -410,9 +395,28 @@
     function closeRule() { document.getElementById('rule-modal').style.display = 'none'; }
     function resetGame() {
         if (confirm("ゲームの状態をすべてリセットして最初からやり直しますか？")) {
-            stopMusic();
             location.reload();
         }
+    }
+
+    // サウンド管理
+    function toggleSound() {
+        const audio = document.getElementById('trade-bgm');
+        if (state.isMuted) {
+            audio.play().catch(e => console.log("Audio play blocked"));
+            state.isMuted = false;
+        } else {
+            audio.pause();
+            state.isMuted = true;
+        }
+        render();
+    }
+
+    function stopMusic() {
+        const audio = document.getElementById('trade-bgm');
+        audio.pause();
+        audio.currentTime = 0;
+        state.isMuted = true;
     }
 
     render();
