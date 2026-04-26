@@ -82,6 +82,9 @@
         .btn-contact {
             display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff; border: 1px solid #5c4033; color: #5c4033; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
+
+        /* サウンドボタン用 */
+        .sound-control { margin-bottom: 20px; text-align: center; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; border: 1px dashed var(--gold); }
     </style>
 </head>
 <body>
@@ -107,6 +110,28 @@
 
 <script>
     let state = { phase: 'top', exchangeStep: 1, players: [], currentTab: 0, earlyBirdCounter: 1, history: [] };
+
+    // 音楽の設定
+    const bgm = new Audio('tradeBGM.MP3');
+    bgm.loop = true;
+    let isPlaying = false;
+
+    function toggleMusic() {
+        if (isPlaying) {
+            bgm.pause();
+            isPlaying = false;
+        } else {
+            bgm.play().catch(e => console.log("再生に失敗しました:", e));
+            isPlaying = true;
+        }
+        render();
+    }
+
+    function stopMusic() {
+        bgm.pause();
+        bgm.currentTime = 0;
+        isPlaying = false;
+    }
 
     function render() {
         const app = document.getElementById('app');
@@ -178,10 +203,14 @@
         let content = '';
         if (state.exchangeStep === 1) {
             content = `
+                <div class="sound-control">
+                    <p style="margin-top:0; font-size:0.85rem;">気分を盛り上げたい方はサウンドをONに</p>
+                    <button class="btn-point" onclick="toggleMusic()">${isPlaying ? '🎵 サウンドOFF' : '🎵 サウンドON'}</button>
+                </div>
                 <h3>① 予言の浄化</h3>
                 <p>手持ちのカードの中から達成が難しいと感じるものを<b>1回だけ</b>(<b>何枚でも</b>)捨てることができます。<br><br>捨てたいカードを<b>”伏せたまま”</b>自分の前に並べます。1枚も捨てないことも可能です。</p>
                 <button onclick="state.exchangeStep=2; render();" class="btn btn-copper">全員並べ終えたら次へ</button>
-                <div style="text-align:center;"><button class="btn-undo" onclick="state.phase='start'; render();">↩ プレイヤー登録に戻る</button></div>
+                <div style="text-align:center;"><button class="btn-undo" onclick="stopMusic(); state.phase='start'; render();">↩ プレイヤー登録に戻る</button></div>
             `;
         } else if (state.exchangeStep === 2) {
             content = `
@@ -218,7 +247,7 @@
                 <div class="important-note">
                     全員の手札が計6枚になったら冒険の開始です！
                 </div>
-                <button onclick="startMain()" class="btn btn-gold" style="margin-top:20px;">冒険開始（メインへ）</button>
+                <button onclick="stopMusic(); startMain();" class="btn btn-gold" style="margin-top:20px;">冒険開始（メインへ）</button>
                 <div style="text-align:center;"><button class="btn-undo" onclick="state.exchangeStep=2; render();">↩ 回収(ステップ2)に戻る</button></div>
             `;
         }
@@ -378,9 +407,10 @@
         document.getElementById('youtube-iframe').src = "";
     }
     function openRule() { document.getElementById('rule-modal').style.display = 'flex'; }
-    function closeRule() { document.getElementById('rule-modal').style.none; }
+    function closeRule() { document.getElementById('rule-modal').style.display = 'none'; }
     function resetGame() {
         if (confirm("ゲームの状態をすべてリセットして最初からやり直しますか？")) {
+            stopMusic();
             location.reload();
         }
     }
