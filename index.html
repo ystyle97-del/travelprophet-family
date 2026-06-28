@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>トラベル・プロフェット ～家族旅行Edition～</title>
+    <title>トラベル・プロフェット</title>
     <style>
         :root {
             --bg-color: #ebdcb2;
@@ -75,13 +75,16 @@
         .score-badge { font-size: 2.2rem; font-weight: bold; color: #8b0000; }
         .particle-coin { position: fixed; width: 24px; height: 24px; background: radial-gradient(circle, #ffe066 0%, #d4af37 100%); border: 2px solid #b8860b; border-radius: 50%; pointer-events: none; z-index: 9999; }
         
-        /* 問い合わせフォーム用のスタイル */
         .contact-section {
             margin-top: 30px; padding: 15px; border-top: 1px solid var(--gold); text-align: center; font-size: 0.85rem;
         }
         .btn-contact {
             display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff; border: 1px solid #5c4033; color: #5c4033; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
+        .rule-list {
+            text-align: left; background: #fffdf8; padding: 15px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.9rem; margin: 10px 0;
+        }
+        .rule-list ul { margin: 0; padding-left: 20px; }
     </style>
 </head>
 <body>
@@ -124,11 +127,26 @@
             <div style="text-align:center; margin-bottom:20px;">
                 <p style="margin:0; font-weight:bold; color:#8b4513;">旅を彩るカードゲーム</p>
                 <h1 style="border:none; margin:0; font-size:1.8rem;">～トラベル・プロフェット～</h1>
-                <p style="margin:0; font-size:1.2rem; font-weight:bold; color:#5c4033;">家族旅行Edition</p>
             </div>
 
             <div class="setup-form">
-                <p>トラベル・プロフェットの遊び方説明サイトです。</p>
+                <p>トラベル・プロフェットシリーズの遊び方説明サイトです。</p>
+                <p>最初に省略ルールで簡単にプレイしてみましょう。</p>
+                
+                <div class="rule-list">
+                    <p style="margin:0 0 5px 0; font-weight:bold; color:#8b4513;">【省略ルールで簡単プレイ】</p>
+                    <ul>
+                        <li>カードには3段階の難易度があります。<br>
+                        （初めてのオフ会Editionは<b>難、普、易</b> / それ以外のEditionは<b>金、銀、銅</b>）</li>
+                        <li>省略ルールでは参加者全員<b>「易(銅)のカード」を5枚ずつ</b>ひいて下さい。</li>
+                        <li>カードには予言(=お題)が書かれています。</li>
+                        <li>お題は他プレイヤーには見せずに、達成したら<b>「プロフェット!」</b>と宣言して内容を他プレイヤーに公開して下さい。</li>
+                        <li>省略ルールでは5枚のカードのうち、<b>最初に3枚達成したプレイヤーが勝者</b>です。</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top:15px;">簡単プレイが終了したら、説明動画を見て下さい。</p>
+
                 <div style="text-align:center; margin:15px 0;">
                     <button onclick="openVideo()" style="background:#5c4033; color:#f4e4bc; border:1px solid var(--border-color); padding:12px 20px; border-radius:25px; font-weight:bold; cursor:pointer; width:100%;">📖 遊び方の解説動画を見る</button>
                 </div>
@@ -161,6 +179,8 @@
     function getStartHTML() {
         return `
             <h1>プレイヤー登録</h1>
+            <p style="text-align:center; font-weight:bold; color:#5c4033; margin-bottom:15px;">いよいよ本番です。最初にプレイヤー登録をして下さい。</p>
+            
             <div class="setup-form">
                 <h3>プレイヤー登録 <small style="font-size:0.8rem; font-weight:normal;">(5人まで遊べます)</small></h3>
                 <div id="player-inputs">
@@ -168,6 +188,14 @@
                     <input type="text" class="p-input" value="プレイヤー2">
                 </div>
                 <button id="add-player-btn" onclick="addInput()" class="btn-point" style="width:100%;">＋ プレイヤー追加</button>
+            </div>
+            
+            <div class="setup-form" style="font-size:0.9rem; background:rgba(255,255,255,0.6); border-color:#8b4513;">
+                <p style="margin-top:0;">トラベル・プロフェットではお題を達成し、点数を稼ぐことが目的となります。</p>
+                <p>本番プレイでは<b>難(金):1枚、普(銀):2枚、易(銅):3枚の合計6枚</b>で遊びます。</p>
+                <p>最初の手札が配られた直後に<b>「交換フェイズ」</b>があります。</p>
+                <p>これには「どうしても達成できなさそうなお題を捨てられる」という目的と、「交換フェイズで点数に差をつけることができる」という目的があります。</p>
+                <p style="margin-bottom:0; font-weight:bold; color:var(--accent-red);">「交換フェイズ」の手順が最初は難しいので、この先のページをよく読みながら、ゆっくりと進めて下さい。</p>
             </div>
             
             <div style="flex-grow:1"></div>
@@ -199,7 +227,7 @@
             content = `
                 ${soundBtn}
                 <h3>② 苦難の回収</h3>
-                <p style="font-size:0.9rem;">他人が捨てた”難しい予言”のカードの中から欲しいものを回収することができます。<br>回収できる上限枚数は<b>金1枚、銀2枚、銅3枚</b>までです。</p>
+                <p style="font-size:0.9rem;">他人が捨てた”難しい予言”のカードの中から欲しいものを回収することができます。<br>回収できる上限枚数は<b>難(金)1枚、普(銀)2枚、易(銅)3枚</b>までです。</p>
                 
                 <div class="important-note">
                     ※予言の中身は見ないまま回収します。回収したカードはまだ手札には入れず、自分の前に並べて下さい。金・銀・銅いずれのカードを回収しても1点の加算です。
@@ -225,7 +253,7 @@
             content = `
                 ${soundBtn}
                 <h3>③ 6枚への復帰</h3>
-                <p>手札の枚数を金1枚、銀2枚、銅3枚 (計6枚)となるよう最終調整します。<br><br>
+                <p>手札の枚数を<b>難(金)1枚、普(銀)2枚、易(銅)3枚 (計6枚)</b>となるよう最終調整します。<br><br>
                 1.まず <b>回収したカードは必ず手札に入れます。</b><br>
                 2. 規定枚数を超過したら、<b>最初に配られた手札から捨てて調整します。</b><br>
                 3. 規定枚数に足りない場合は<b>山札から補充します。</b></p>
@@ -243,7 +271,7 @@
         const player = state.players[state.currentTab];
         return `
             <div style="text-align:center; margin-bottom:10px;">
-                <h1 style="border:none; margin:0; font-size:1.2rem;">トラベル・プロフェット 家族旅行Edition</h1>
+                <h1 style="border:none; margin:0; font-size:1.2rem;">トラベル・プロフェットシリーズ</h1>
                 <p style="margin:0; font-size:1.4rem; font-weight:bold; color:#5c4033;">冒険の記録</p>
             </div>
             <div class="tabs">
@@ -262,9 +290,9 @@
 
             <button onclick="openRule()" style="width:100%; background:#fdf5e6; border:1px solid #8b4513; color:#8b4513; margin-bottom:15px; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📜 プロフェット忘れと指摘について</button>
             
-            <button class="btn btn-copper" onclick="handleProphet('copper', this)">銅の予言達成 (+1点)</button>
-            <button class="btn btn-silver" onclick="handleProphet('silver', this)">銀の予言達成 (+2点)</button>
-            <button class="btn btn-gold" onclick="handleProphet('gold', this)">夜会: 金の予言達成 (+5点)</button>
+            <button class="btn btn-copper" onclick="handleProphet('copper', this)">易(銅)の予言達成 (+1点)</button>
+            <button class="btn btn-silver" onclick="handleProphet('silver', this)">普(銀)の予言達成 (+2点)</button>
+            <button class="btn btn-gold" onclick="handleProphet('gold', this)">難(金)の予言達成 (+5点)</button>
             
             <button class="btn-point" style="width:100%; margin-top:5px; padding:15px;" onclick="manualAdd(1)">💡 宣言忘れ指摘ボーナス (+1点)</button>
             
@@ -284,6 +312,7 @@
     }
 
     // --- ロジック部分 ---
+    // （既存のロジックは正常に引き継いでいます）
     function addInput() {
         const div = document.getElementById('player-inputs');
         const btn = document.getElementById('add-player-btn');
@@ -394,7 +423,7 @@
     function openRule() { document.getElementById('rule-modal').style.display = 'flex'; }
     function closeRule() { document.getElementById('rule-modal').style.display = 'none'; }
     function resetGame() {
-        if (confirm("ゲームの状態をすべてリセットして最初からやり直しますか？")) {
+        if (confirm("ゲームの状態をすべてリセットして最初からやり長しますか？")) {
             location.reload();
         }
     }
