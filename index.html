@@ -168,6 +168,9 @@
                     <br>
                     <img src="qr-code.png" class="qr-image" alt="マニュアル用QRコード">
                     <p style="font-size:0.75rem; color:#666; font-weight:normal;">（スマホで読み取ってマニュアルを確認できます）</p>
+                    <div style="margin-top: 10px;">
+                        <a href="https://ystyle97-del.github.io/travelprophet-familymanual/" target="_blank" style="display:inline-block; background:#5c4033; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; font-weight:bold; font-size:0.9rem; border:1px solid var(--border-color); box-shadow:0 2px 4px rgba(0,0,0,0.2);">遊び方説明専用サイトを開く</a>
+                    </div>
                 </div>
             </div>
 
@@ -277,7 +280,7 @@
         return `
             <div style="text-align:center; margin-bottom:10px;">
                 <h1 style="border:none; margin:0; font-size:1.2rem;">トラベル・プロフェットシリーズ</h1>
-                <p style="margin:0; font-size:1.4rem; font-weight:bold; color:#5c4033;">冒険の記録</p>
+                <p style="margin:0; font-size:1.4rem; font-weight:bold; color:#5c4033;">冒険 of 記録</p>
             </div>
             <div class="tabs">
                 ${state.players.map((p, i) => `
@@ -317,7 +320,6 @@
     }
 
     // --- ロジック部分 ---
-    // （既存のロジックは正常に引き継いでいます）
     function addInput() {
         const div = document.getElementById('player-inputs');
         const btn = document.getElementById('add-player-btn');
